@@ -1,67 +1,26 @@
-#### Prerequisites for the tests
-Download the JBOSS EAP from
-```
-https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=appplatform&version=7.2
-```
-installation instructions found at 
-```
-https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/7.3/html/installation_guide/index
-```
-Run the EAP on port 8080.
+# JBPM Process Testing Using Cucumber
 
-Download the PAM from
-```
-https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=rhpam&version=7.7.0
-```
-and deploy the PAM in above installed EAP. Instalation instructions found at
-```
-https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.7/html/installing_and_configuring_red_hat_process_automation_manager_on_red_hat_jboss_eap_7.2/index
-```
+This project to test the JBPM processes with Cucumber by implementing some useful integrations and default step definitions.  Here are the features:
+
+1. BPMN assets to be tested are included as a dependency in the [pom.xml](pom.xml) file.  This way the tests can be separate from the process definitions.
+  - The example KJAR in the pom.xml can be found at https://github.com/rmuppane/insurancequote
+2. Default [step definitions](src/test/java/com/garanti/internal/process/InsuranceQuoteSteps.java) and [feature file](src/test/resources/features/insurance-quote.feature) define an easy way to interact with processes.
+  - As of version 1.0.0, the default step definitions include some task steps
+3. [KieServicesClientHelper](src/test/java/com/garanti/internal/helpers/KieServicesClientHelper.java) used to connet the kie-server. [InsuranceQuoteSteps](src/test/java/com/garanti/internal/process/InsuranceQuoteSteps.java) have the connectivity details, Update the kie.server.url, kie.server.user and kie.server.password to communicated with kie-server.
+4. A [Test class](src/test/java/com/garanti/internal/process/RunnerTest.java) is used for step definitions.
 
 
-While deploying the PAM create user with
-```
-username: rhpamAdmin
-password: Pa$$w0rd
-```
+Instructions:
 
+1. Clone this repo.
+2. If using and IDE, recommend adding the [Cucumber plugin](https://cucumber.io/docs/tools/java/)
+3. Include your own KJAR(s) in the [pom.xml](pom.xml) file.  The [loanapproval.feature](src/test/resources/features/loanapproval.feature) file uses the KJAR from  https://github.com/rmuppane/loanapproval. So clone it and perform `mvn clean install`.
+4. Run the test using `mvn clean test` or test through your IDE.
+5. Modify the [user groups properties file](src/test/resources/usergroups.properties) to customize user group callback.
 
-from a browser open and use the created rhpamAdmin account to login at:
-```
-http://localhost:8080/business-central/
-```
+Environment:
 
-Create additional Groups:
-   * Click settings
-   * Click New group
-   * Name group as ```ProfessionalStaff``` <You can use any name for the group, remember the name for future usage>
-   * Assign user ```rhpamAdmin``` to ```ProfessionalStaff``` group 
-   * Click Add selected users
-
-
-Repeat the above steps for addition of another group and name it as ```OperationsManager```  <You can use any name for the group, remember the name for future usage>
-
-#### Build the [contractor-onboarding-process](https://gitlab.consulting.redhat.com/contractor-onboarding/contractor-onboarding-process) manually 
-```
-$ cd contractor-onboarding-process/
-$ mvn clean install
-```
-Or
-
-#### Build the [contractor-onboarding-process](https://gitlab.consulting.redhat.com/contractor-onboarding/contractor-onboarding-process) from Business Central 
-   * Import project from [contractor-onboarding-process](https://gitlab.consulting.redhat.com/contractor-onboarding/contractor-onboarding-process.git)
-   * Click ```Build and Install``` Button
-
-
-#### Update Case Role assignments in Test Case
-Replace the value of the ```users``` and ```managers``` in the feature file [[contractor-onboarding.feature](/src/test/resources/contractor-onboarding.feature)] with group names created above.
-
-| users             |       managers    |
-| ------------------|------------------ |
-| ProfessionalStaff | OperationsManager |
-
-#### Build and run tests
-```
-$ cd contractor-onboarding-integration-test/
-$ mvn clean install
-```
+1. Java 8 or 11
+2. Product version and librarys: 7.11, 7.52.0.Final-redhat-00008 or 7.11.1.redhat-00001
+3. Junit 4
+4. Cucumber 6.11.0
